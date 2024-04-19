@@ -1,0 +1,2 @@
+# InteligentSystemsPartE
+This for InteligentsSystemsPartE
