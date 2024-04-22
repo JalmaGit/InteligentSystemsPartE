@@ -1,10 +1,13 @@
 import pandas as pd
 import DataFrameHandler as DFH
 
-fileName = "used_cars_data.csv"
+fileName = "WineQT.csv"
 
-dfh = DFH.DataFrameHandler(fileName)
-
-dataFrame = dfh.dataFrame
+dataFrame = pd.read_csv(fileName)
 
 print(dataFrame.describe())
+
+for i in range(11):
+    print("When quality is",i,", the number of wines with said quality is:",(dataFrame["quality"] == i).sum())
+
+print(dataFrame)
