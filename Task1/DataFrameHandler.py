@@ -1,32 +1,38 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 class DataFrameHandler:
 
     def __init__(self, fileName):
         self.dataFrame = pd.read_csv(fileName)
-        self.namesToReplace = ["brand", "model","engine","fuel","gearbox","location"]
-        self.dataFrame = self.dataFrameReplacer(self.dataFrame,self.namesToReplace)
+        self.dataFrame = self.dataFrame.drop_duplicates()
+        self.dataFrame = self.dataFrame.dropna(axis=0, how='all')
+        self.dataFrame = self.dataFrame.dropna(axis=1, how='any')
 
-    def dataFrameReplacer(self, df, replaceList):
+        print(self.dataFrame.describe())
 
-        for name in replaceList: 
-        
-            checkerDict = {}
-    
-            featureValue = 0
-            for i in df[name]:
-                if i not in checkerDict:
-                    checkerDict[i] = featureValue
-                    featureValue += 1.0
-    
-            for key, value in checkerDict.items():
-                df.loc[df[name] == key, name] = float(value)
-            
-            df[name] = df[name].replace("None", float('nan'))
-            df[name] = df[name].astype('float64')
-    
-        return df
+    def printObjectsPerClass(self, feature):
+        objectsBelongingToEachClass = np.empty(0)
 
-    def updateNamesToReplace(self, newNamesToReplace):
-        self.namesToReplace = newNamesToReplace
-        self.dataFrame = self.dataFrameReplacer(self.dataFrame,self.namesToReplace)
+        labels = np.array(["Disgusting","Extremly Bad", "Very Bad", "Bad", "Kinda Bad", "Mediocre", "Decent", "Good", "Very Good", "Extremely Good", "Perfect"])
+
+        for i in range(max(self.dataFrame[feature]+3)):
+            objectsBelongingToEachClass = np.append(objectsBelongingToEachClass,(self.dataFrame[feature] == i).sum())
+            print("When quality is",i,", the number of wines with said quality is:",(self.dataFrame[feature] == i).sum(),labels[i])
+
+    def printSingleHistogram(self, feature, binLimit: bool = False):
+        columnData = self.dataFrame[feature]
+
+        fig, ax = plt.subplots()
+
+        if feature == "quality":
+            customBins = np.arange(11)
+            ax.hist(columnData, customBins)
+        elif binLimit:
+            customBins = np.arange(np.min(self.dataFrame[feature]),np.max(self.dataFrame[feature]+1),1)
+            ax.hist(columnData, customBins)
+        else:
+            ax.hist(columnData)
+
+        fig.show()
