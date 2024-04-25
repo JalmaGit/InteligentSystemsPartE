@@ -1,23 +1,34 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 
-# Sample data
-data = {'x': [1, 2, 3, 4, 5],
-        'y': [2, 3, 5, 7, 11],
-        'variable': ['A', 'A', 'B', 'B', 'A']}
+# Data for the first scatter plot
+x1 = [1, 2, 3, 4, 5]
+y1 = [2, 3, 5, 7, 11]
 
-# Create a DataFrame
-df = pd.DataFrame(data)
+# Data for the second scatter plot
+x2 = [1, 2, 3, 4, 5]
+y2 = [3, 5, 7, 11, 13]
 
-# Create scatter plot with different colors for each variable
-plt.scatter(df[df['variable'] == 'A']['x'], df[df['variable'] == 'A']['y'], color='red', label='Variable A')
-plt.scatter(df[df['variable'] == 'B']['x'], df[df['variable'] == 'B']['y'], color='blue', label='Variable B')
+# Create a figure and two subplots side by side
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
-# Add labels, legend, and title
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.legend()
-plt.title('Scatter Plot with Different Colors for Each Variable')
+# Plot the first scatter plot
+ax1.scatter(x1, y1, color='blue', label='First Scatter Plot')
+ax1.set_title('First Scatter Plot')
+ax1.set_xlabel('X Axis')
+ax1.set_ylabel('Y Axis')
 
-# Show plot
+# Plot the second scatter plot
+ax2.scatter(x2, y2, color='red', label='Second Scatter Plot')
+ax2.set_title('Second Scatter Plot')
+ax2.set_xlabel('X Axis')
+ax2.set_ylabel('Y Axis')
+
+# Add legend to each subplot
+ax1.legend()
+ax2.legend()
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plot
 plt.show()

@@ -15,7 +15,7 @@ class DataFrameHandler:
         self.notUsedDataFrame = self.notUsedDataFrame.drop_duplicates()
         self.notUsedDataFrame = self.notUsedDataFrame.dropna(axis=0, how='all')
         self.notUsedDataFrame = self.notUsedDataFrame.dropna(axis=1, how='any')
-        #self.notUsedDataFrame = self.notUsedDataFrame.drop(columns=["Id"])
+        self.notUsedDataFrame = self.notUsedDataFrame.drop(columns=["Id"])
  
         dataToReplace = []
         for quality in self.dataFrame["quality"]:
@@ -83,13 +83,73 @@ class DataFrameHandler:
                 ax1.boxplot(self.dataFrame[i])
                 fig1.show()
 
-    def printScatterPlot(self, feature, featureToCompare, selector):
+    def printScatterPlot(self, featureToCompare, selector):
 
         if selector == 0:
-            fig1, ax1 = plt.subplots()
-            ax1.scatter(self.dataFrame[feature], self.dataFrame[featureToCompare])
-            ax1.set_xlabel(feature)
-            ax1.set_ylabel(featureToCompare)
-            label = "Scatter plot of " + feature + " vs "  + featureToCompare
-            ax1.set_title(label)
-            fig1.show()
+            listOfFeatures = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "pH", "density", "sulphates", "alcohol", "quality"]
+            listOfFeatures.remove(featureToCompare)
+
+            numPlots = len(listOfFeatures)
+            numCols = 3
+            numRows = 4
+            
+            figs, axs = plt.subplots(numRows, numCols, figsize=(30,10))
+
+            if numPlots == 1:
+                axs = [axs]
+
+            for i, element in enumerate(listOfFeatures):
+                row = i // numCols
+                col = i % numCols
+                scatterGood = []
+                scatterBad = []
+                compareGoodFeature = []
+                compareBadFeature = []
+
+                for quality, element1, compareElement in zip(self.dataFrame["quality"],self.dataFrame[element],self.dataFrame[featureToCompare]):
+                    if quality <= 5:
+                        scatterBad.append(element1)
+                        compareBadFeature.append(compareElement)
+                    else:
+                        scatterGood.append(element1)
+                        compareGoodFeature.append(compareElement)
+                
+                axs[row][col].scatter(scatterBad, compareBadFeature)
+                axs[row][col].scatter(scatterGood, compareGoodFeature)
+                axs[row][col].set_xlabel(element)
+                axs[row][col].set_ylabel(featureToCompare)
+                label = "Scatter plot of " + element + " vs "  + featureToCompare
+                axs[row][col].set_title(label)
+            
+            plt.subplots_adjust(wspace=0.4, hspace=0.4)
+                
+            figs.show()
+
+        if selector == 1:
+            listOfFeatures = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "pH", "density", "sulphates", "alcohol", "quality"]
+            listOfFeatures.remove(featureToCompare)
+            
+            print("Here")
+            for element in listOfFeatures:
+                figs, axs = plt.subplots()
+                scatterGood = []
+                scatterBad = []
+                compareGoodFeature = []
+                compareBadFeature = []
+
+                for quality, element1, compareElement in zip(self.dataFrame["quality"],self.dataFrame[element],self.dataFrame[featureToCompare]):
+                    if quality <= 5:
+                        scatterBad.append(element1)
+                        compareBadFeature.append(compareElement)
+                    else:
+                        scatterGood.append(element1)
+                        compareGoodFeature.append(compareElement)
+                
+                axs.scatter(scatterBad, compareBadFeature)
+                axs.scatter(scatterGood, compareGoodFeature)
+                axs.set_xlabel(element)
+                axs.set_ylabel(featureToCompare)
+                label = "Scatter plot of " + element + " vs "  + featureToCompare
+                axs.set_title(label)
+                
+                figs.show()

@@ -1,32 +1,54 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import DataFrameHandler as DFH
 
+def useDataFrameHandlerPlotting(dfh):
+    dfh.printSingleHistogram("quality",0)
+    dfh.printSingleHistogram("quality",1)
+    dfh.printSingleHistogram("quality",2)
+    dfh.printBoxPlots("quality",0)
+    dfh.printBoxPlots("quality",1)
+
+    #dfh.printScatterPlot("density",0)
+
+
+    dfh.printObjectsPerClass("quality")
+
+    #fig, ax = plt.subplots()
+    #ax.boxplot(dfh.dataFrame["quality"])
+    
 fileName = "WineQT.csv"
 
 dfh = DFH.DataFrameHandler(fileName)
 
-dfh.printSingleHistogram("quality",0)
-dfh.printSingleHistogram("quality",1)
-dfh.printSingleHistogram("quality",2)
-#dfh.printBoxPlots("quality",0)
-#dfh.printBoxPlots("quality",1)
+useDataFrameHandlerPlotting(dfh)
 
-dfh.printScatterPlot("residual sugar","alcohol",0)
-dfh.printScatterPlot("fixed acidity","citric acid",0)
-dfh.printScatterPlot("chlorides","density",0)
-dfh.printScatterPlot("alcohol","density",0)
-dfh.printScatterPlot("residual sugar","density",0)
-dfh.printScatterPlot("pH","fixed acidity",0)
+# Scatter plot
+#pairplot = sns.pairplot(dfh.dataFrame, hue="quality")
+#pairplot.map_offdiag(plt.scatter, cmap="coolwarm")
+#plt.title('Pair Plot')
 
+for i, element in enumerate(dfh.dataFrame.columns):
 
-dfh.printObjectsPerClass("quality")
+    dfh.printScatterPlot(element,1)
 
-#fig, ax = plt.subplots()
-#ax.boxplot(dfh.dataFrame["quality"])
+#    for col2 in dfh.dataFrame.columns[i+1:]:
+ #       plt.figure()
+  #      sns.scatterplot(data=dfh.dataFrame, x=col1, y=col2)
+   #     plt.title(f'Scatter Plot: {col1} vs {col2}')
 
+# Heatmap
+corr = dfh.dataFrame.corr()
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title('Heatmap')
 plt.show()
+
+# Boxplot
+#sns.boxplot(data=dfh.dataFrame, x="species", y="petal_width")
+#plt.title('Boxplot')
+#plt.show()
 
 #dataFrame.hist(figsize=(14,8))
 
