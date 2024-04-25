@@ -7,17 +7,24 @@ fileName = "WineQT.csv"
 
 dfh = DFH.DataFrameHandler(fileName)
 
-dfh.printSingleHistogram("quality")
+dfh.printSingleHistogram("quality",0)
+dfh.printSingleHistogram("quality",1)
+dfh.printSingleHistogram("quality",2)
+#dfh.printBoxPlots("quality",0)
+#dfh.printBoxPlots("quality",1)
 
-dfh.dataFrame.info()
+dfh.printScatterPlot("residual sugar","alcohol",0)
+dfh.printScatterPlot("fixed acidity","citric acid",0)
+dfh.printScatterPlot("chlorides","density",0)
+dfh.printScatterPlot("alcohol","density",0)
+dfh.printScatterPlot("residual sugar","density",0)
+dfh.printScatterPlot("pH","fixed acidity",0)
+
 
 dfh.printObjectsPerClass("quality")
 
-fig, ax = plt.subplots()
-ax.boxplot(dfh.dataFrame["quality"])
-
-dfh.dataFrame.info()
-print(dfh.dataFrame.describe())
+#fig, ax = plt.subplots()
+#ax.boxplot(dfh.dataFrame["quality"])
 
 plt.show()
 

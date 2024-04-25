@@ -1,33 +1,23 @@
 import pandas as pd
-import numpy as np
+import matplotlib.pyplot as plt
 
-def dataFrameReplacer(df, replaceList):
+# Sample data
+data = {'x': [1, 2, 3, 4, 5],
+        'y': [2, 3, 5, 7, 11],
+        'variable': ['A', 'A', 'B', 'B', 'A']}
 
-    for name in replaceList: 
+# Create a DataFrame
+df = pd.DataFrame(data)
 
-        checkerDict = {}
+# Create scatter plot with different colors for each variable
+plt.scatter(df[df['variable'] == 'A']['x'], df[df['variable'] == 'A']['y'], color='red', label='Variable A')
+plt.scatter(df[df['variable'] == 'B']['x'], df[df['variable'] == 'B']['y'], color='blue', label='Variable B')
 
-        featureValue = 0
-        for i in df[name]:
-            if i not in checkerDict:
-                checkerDict[i] = featureValue
-                featureValue += 1.0
+# Add labels, legend, and title
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.legend()
+plt.title('Scatter Plot with Different Colors for Each Variable')
 
-        for key, value in checkerDict.items():
-            df.loc[df[name] == key, name] = float(value)
-        
-        df[name] = df[name].replace("None", float('nan'))
-        df[name] = df[name].astype('float64')
-
-    return df
-
-fileName = "used_cars_data.csv"
-
-dataFrame = pd.read_csv(fileName)
-
-namesToReplace = ["brand", "model","engine","fuel","gearbox","location"]
-
-newDataFrame = dataFrameReplacer(dataFrame, namesToReplace)
-
-print(newDataFrame["gearbox"])
-print(newDataFrame.describe())
+# Show plot
+plt.show()
