@@ -114,12 +114,13 @@ class DataFrameHandler:
                         scatterGood.append(element1)
                         compareGoodFeature.append(compareElement)
                 
-                axs[row][col].scatter(scatterBad, compareBadFeature)
-                axs[row][col].scatter(scatterGood, compareGoodFeature)
+                axs[row][col].scatter(scatterBad, compareBadFeature, label="Bad Wine")
+                axs[row][col].scatter(scatterGood, compareGoodFeature, alpha=0.5, label="Good Wine")
                 axs[row][col].set_xlabel(element)
                 axs[row][col].set_ylabel(featureToCompare)
                 label = "Scatter plot of " + element + " vs "  + featureToCompare
                 axs[row][col].set_title(label)
+                axs.legend()
             
             plt.subplots_adjust(wspace=0.4, hspace=0.4)
                 
@@ -129,7 +130,6 @@ class DataFrameHandler:
             listOfFeatures = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "pH", "density", "sulphates", "alcohol", "quality"]
             listOfFeatures.remove(featureToCompare)
             
-            print("Here")
             for element in listOfFeatures:
                 figs, axs = plt.subplots()
                 scatterGood = []
@@ -144,12 +144,12 @@ class DataFrameHandler:
                     else:
                         scatterGood.append(element1)
                         compareGoodFeature.append(compareElement)
-                
-                axs.scatter(scatterBad, compareBadFeature)
-                axs.scatter(scatterGood, compareGoodFeature)
+                 
+                axs.scatter(scatterBad, compareBadFeature, label="Bad Wine")
+                axs.scatter(scatterGood, compareGoodFeature, alpha=0.5, label="Good Wine")
                 axs.set_xlabel(element)
                 axs.set_ylabel(featureToCompare)
                 label = "Scatter plot of " + element + " vs "  + featureToCompare
                 axs.set_title(label)
-                
+                axs.legend()
                 figs.show()

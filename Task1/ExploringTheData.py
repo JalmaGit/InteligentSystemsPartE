@@ -18,28 +18,47 @@ def useDataFrameHandlerPlotting(dfh):
 
     #fig, ax = plt.subplots()
     #ax.boxplot(dfh.dataFrame["quality"])
+
+def histograms(df):
+
+    goodDF = df[df['quality'] != 5]
+
+    goodDF = goodDF.drop(columns='quality')      
+    goodDF.hist()
+    plt.suptitle("Good Wine")
+
+    badDF = df[df['quality'] != 6]
+
+    badDF = badDF.drop(columns='quality')       
+    badDF.hist()
+    plt.suptitle("Bad Wine")
+    plt.show()
     
 fileName = "WineQT.csv"
 
 dfh = DFH.DataFrameHandler(fileName)
 
-useDataFrameHandlerPlotting(dfh)
+#useDataFrameHandlerPlotting(dfh)
 
 # Scatter plot
+
+
 #pairplot = sns.pairplot(dfh.dataFrame, hue="quality")
 #pairplot.map_offdiag(plt.scatter, cmap="coolwarm")
 #plt.title('Pair Plot')
+#plt.show()
 
-for i, element in enumerate(dfh.dataFrame.columns):
+#for i, element in enumerate(dfh.dataFrame.columns):
 
-    dfh.printScatterPlot(element,1)
+    #dfh.printScatterPlot(element,1)
 
-#    for col2 in dfh.dataFrame.columns[i+1:]:
- #       plt.figure()
-  #      sns.scatterplot(data=dfh.dataFrame, x=col1, y=col2)
-   #     plt.title(f'Scatter Plot: {col1} vs {col2}')
+    #for col2 in dfh.dataFrame.columns[i+1:]:
+        #plt.figure()
+        #sns.scatterplot(data=dfh.dataFrame, x=col1, y=col2)
+        #plt.title(f'Scatter Plot: {col1} vs {col2}')
 
 # Heatmap
+dfh.dataFrame = dfh.dataFrame.drop(columns="quality")
 corr = dfh.dataFrame.corr()
 sns.heatmap(corr, annot=True, cmap='coolwarm')
 plt.title('Heatmap')
