@@ -5,16 +5,16 @@ import seaborn as sns
 import DataFrameHandler as DFH
 
 def useDataFrameHandlerPlotting(dfh):
-    dfh.printSingleHistogram("quality",0)
-    dfh.printSingleHistogram("quality",1)
-    dfh.printSingleHistogram("quality",2)
-    dfh.printBoxPlots("quality",0)
+    #dfh.printSingleHistogram("quality",0)
+    #dfh.printSingleHistogram("quality",1)
+    #dfh.printSingleHistogram("quality",2)
+    #dfh.printBoxPlots("quality",0)
     dfh.printBoxPlots("quality",1)
 
     #dfh.printScatterPlot("density",0)
 
 
-    dfh.printObjectsPerClass("quality")
+    #dfh.printObjectsPerClass("quality")
 
     #fig, ax = plt.subplots()
     #ax.boxplot(dfh.dataFrame["quality"])
@@ -33,6 +33,19 @@ def histograms(df):
     badDF.hist()
     plt.suptitle("Bad Wine")
     plt.show()
+
+def removeOutliers(dfh):
+    listOfFeatures = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"]
+
+    for feature in listOfFeatures:
+        dfh.dataFrame = dfh.removeOutliers(dfh.dataFrame, feature)
+        
+def scatterPlot(dfh):
+
+    pairplot = sns.pairplot(dfh.dataFrame, hue="quality")
+    pairplot.map_offdiag(plt.scatter, cmap="coolwarm")
+    plt.title('Pair Plot')
+    plt.show()
     
 fileName = "WineQT.csv"
 
@@ -40,13 +53,14 @@ dfh = DFH.DataFrameHandler(fileName)
 
 #useDataFrameHandlerPlotting(dfh)
 
+#plt.show()
+
 # Scatter plot
 
-
-#pairplot = sns.pairplot(dfh.dataFrame, hue="quality")
-#pairplot.map_offdiag(plt.scatter, cmap="coolwarm")
-#plt.title('Pair Plot')
+#dfh.dataFrame.boxplot()
 #plt.show()
+
+#scatterPlot()
 
 #for i, element in enumerate(dfh.dataFrame.columns):
 
@@ -58,14 +72,14 @@ dfh = DFH.DataFrameHandler(fileName)
         #plt.title(f'Scatter Plot: {col1} vs {col2}')
 
 # Heatmap
-dfh.dataFrame = dfh.dataFrame.drop(columns="quality")
-corr = dfh.dataFrame.corr()
-sns.heatmap(corr, annot=True, cmap='coolwarm')
-plt.title('Heatmap')
-plt.show()
+#dfh.dataFrame = dfh.dataFrame.drop(columns="quality")
+#corr = dfh.dataFrame.corr()
+#sns.heatmap(corr, annot=True, cmap='coolwarm')
+#plt.title('Heatmap')
+#plt.show()
 
 # Boxplot
-#sns.boxplot(data=dfh.dataFrame, x="species", y="petal_width")
+#sns.boxplot(data=dfh.dataFrame)
 #plt.title('Boxplot')
 #plt.show()
 

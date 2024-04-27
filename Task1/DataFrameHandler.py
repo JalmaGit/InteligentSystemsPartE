@@ -26,8 +26,21 @@ class DataFrameHandler:
         
         self.dataFrame["quality"] = dataToReplace
 
+        self.dataFrame.to_csv("WineQTCali.csv", index=False)
+
         print(self.dataFrame)
         print(self.dataFrame.describe())
+
+
+    def removeOutliers(self, ds, col):
+        quart1 = ds[col].quantile(0.25)
+        quart3 = ds[col].quantile(0.75)
+        IQR = quart3 - quart1 #Interquartile
+        range
+        low_val = quart1 - 1.5*IQR
+        high_val = quart3 + 1.5*IQR
+        df_out = ds.loc[(ds[col] > low_val) & (ds[col] < high_val)]
+        return df_out
 
     def printObjectsPerClass(self, feature):
         objectsBelongingToEachClass = np.empty(0)
@@ -66,7 +79,6 @@ class DataFrameHandler:
 
     def printBoxPlots(self, feature, selector):
 
-
         if selector == 0:
             fig1, ax1 = plt.subplots()
             ax1.boxplot(self.dataFrame[feature])
@@ -82,6 +94,27 @@ class DataFrameHandler:
                 ax1.set_title(label)
                 ax1.boxplot(self.dataFrame[i])
                 fig1.show()
+
+        if selector == 2:
+            numCols = 3
+            numRows = 4
+
+            listOfFeatures = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"]
+        
+            figs, axs = plt.subplots(numRows, numCols, figsize=(30,10))
+
+            for i, element in enumerate(listOfFeatures):
+                row = i // numCols
+                col = i % numCols
+                
+                axs[row][col].boxplot(self.dataFrame[element])
+                axs[row][col].set_xlabel(element)
+                axs[row][col].set_title("Frequency")
+            
+            plt.subplots_adjust(wspace=0.4, hspace=0.4)
+                
+            figs.show()
+
 
     def printScatterPlot(self, featureToCompare, selector):
 
