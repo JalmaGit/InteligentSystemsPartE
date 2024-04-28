@@ -3,70 +3,165 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
-# Step 1: Loading data
+# Loading data
 df = pd.read_csv("WineQTCali.csv")
 
-# Step 2: Data Preprocessing
 X = df.drop('quality', axis=1)
 X = X.drop('dataCount', axis=1)
 y = df['quality']
 
-# Step 3: Splitting Data
-
-## We are keeping 20% of the Data for testing, and 80% of the data for training
+## We are keeping 30% of the Data for testing, and 70% of the data for training
 ## Randomstate utilized to generate the same train test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=21)
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=21)
 
-# Step 4: Rescaling
+good = 0
+bad = 0
+for i in yTrain:
+    if i == 6:
+        good += 1
+    else:
+        bad += 1
+
+print(f"{good=} and {bad=}")
+
+good = 0
+bad = 0
+for i in yTest:
+    if i == 6:
+        good += 1
+    else:
+        bad += 1
+
+print(f"{good=} and {bad=}")
 
 ##Utilized to rescale so that no feature is dominating in the machine learning
 scalar = StandardScaler()
+xTrainScaled = scalar.fit_transform(xTrain)
+xTestScaled = scalar.transform(xTest)
 
-X_train_scaled = scalar.fit_transform(X_train)
-X_test_scaled = scalar.transform(X_test)
+def LogRegRun(exp, i, solver, C, l1Ratio):
 
-# Step 5: Model Building and Performance Evaluation
+    penalty = "l2"
+    if (solver == "saga"): 
+        penalty="elasticnet"
+    model = LogisticRegression(random_state=0,
+                                C = C,
+                                fit_intercept= True,
+                                class_weight='balanced',
+                                penalty=penalty,
+                                solver=solver,
+                                l1_ratio=l1Ratio,
+                                ).fit(xTrainScaled,yTrain)
 
-## First Set of hyperparameters
-print("____________FIRST SET OF HYPERPARAMETERS_______________")
-model = LogisticRegression(random_state=0).fit(X_train_scaled,y_train)
+    yPred = model.predict(xTestScaled)
 
-y_pred = model.predict(X_test_scaled)
+    trainScore = round(model.score(xTrainScaled, yTrain),4)
+    accuracyScore = round(accuracy_score(yTest, yPred),4)
+
+    print(f"____________EXPERIMENT {exp} WITH {i} SET OF HYPERPARAMETERS_______________")
+    print("Train score: ",round(model.score(xTrainScaled, yTrain),4))
+    print("Accuracy: ", round(accuracy_score(yTest, yPred),4))
+    print("Classification Report: ", classification_report(yTest, yPred))
+
+    return model, trainScore, accuracyScore
+
+numCols = 3
+numRows = 1
+
+solvers = ["lbfgs", "liblinear", "newton-cg", "newton-cholesky", "sag", "saga"]
+solversId = [1,2,3,4,5,6]
+
+l1ratios = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
+
+Cs = [0.25, 0.5,0.75,1,1.25,1.5,1.75,2]
+
+models = []
+accs = []
+trainScores = []
+
+figs, axs = plt.subplots(numRows, numCols, figsize=(30,10))
+#(i, solver, C, l1Ratio):
+
+def experiments(j, experiment):
+
+    if experiment == "kernels":
+        for i, solver in enumerate(solvers):
+            model, trainScore, acc = LogRegRun(j,i, solver, 1, 0.0)
+
+            if i == 2:
+                models.append(model)
+            accs.append(acc)
+            trainScores.append(trainScore)
+        axs[j].plot(solversId,accs, label="Test Score")
+        axs[j].plot(solversId,trainScores, label="Training Score")
+        axs[j].set_xlabel("Solvers Utilized") # X-axis label
+        axs[j].set_ylabel("Accuracy") # Y-axis label
+        axs[j].set_title("Experiment 1")
+        axs[j].legend()
+        axs[j].set_xticks(solversId)
+        axs[j].set_xticklabels(solvers)
+    elif experiment == "C":
+        for i, c in enumerate(Cs):
+            model, trainScore, acc = LogRegRun(j,i, "lbfgs", c, 0.0)
+
+            if i == 3:
+                models.append(model)
+            accs.append(acc)
+            trainScores.append(trainScore)
+        axs[j].plot(Cs,accs, label="Test Score")
+        axs[j].plot(Cs,trainScores, label="Training Score")
+        axs[j].set_xlabel("C Values Utilized") # X-axis label
+        axs[j].set_ylabel("Accuracy") # Y-axis label
+        axs[j].set_title("Experiment 2")
+        axs[j].legend()
+        axs[j].set_xticks(Cs)
+    elif experiment == "degree":
+        for i, l1ratio in enumerate(l1ratios):
+            model, trainScore, acc = LogRegRun(j,i, "saga", 1, l1ratio)
+
+            if i == 2:
+                models.append(model)
+            accs.append(acc)
+            trainScores.append(trainScore)
+        axs[j].plot(l1ratios,accs, label="Test Score")
+        axs[j].plot(l1ratios,trainScores, label="Training Score")
+        axs[j].set_xlabel("L1 Ratios Utilized") # X-axis label
+        axs[j].set_ylabel("Accuracy") # Y-axis label
+        axs[j].set_title("Experiment 3")
+        axs[j].legend()
+        axs[j].set_xticks(l1ratios)
+
+experiments(0,"kernels")
+accs = []
+trainScores = []
+experiments(1,"C")
+accs = []
+trainScores = []
+experiments(2,"degree")
 
 
-print("Train score: ",round(model.score(X_train_scaled, y_train),4))
-print("Accuracy: ", round(accuracy_score(y_test, y_pred),4))
-print("Classification Report: ", classification_report(y_test, y_pred))
 
-## Second Set of hyperparameters
-print("____________SECOND SET OF HYPERPARAMETERS_______________")
-model1 = LogisticRegression(random_state=0,
-                            C = 10,
-                            fit_intercept= True
-                            ).fit(X_train_scaled,y_train)
+from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, roc_curve
+...
+plt.figure(figsize=(8, 6))
 
-y_pred1 = model1.predict(X_test_scaled)
+# Roc curves from chatgpt
+for i, model in enumerate(models, start=1):
+    fpr, tpr, _ = roc_curve((yTest == 6).astype(int), model.decision_function(xTestScaled))
+    roc_auc = roc_auc_score((yTest == 6).astype(int), model.decision_function(xTestScaled))
+    plt.plot(fpr, tpr, label=f'Test {i} (AUC = {roc_auc:.2f})')
 
-print("Train score: ",round(model1.score(X_train_scaled, y_train),4))
-print("Accuracy: ", round(accuracy_score(y_test, y_pred1),4))
-print("Classification Report: ", classification_report(y_test, y_pred1))
+plt.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Random Guessing')
 
-## Third Set of hyperparameters
-print("____________THIRD SET OF HYPERPARAMETERS_______________")
-model2 = LogisticRegression(random_state=0,
-                            C = 10,
-                            fit_intercept= True,
-                            class_weight='balanced',
-                            penalty='elasticnet',
-                            solver='saga',
-                            l1_ratio=0.8,
-                            max_iter=10000
-                            ).fit(X_train_scaled,y_train)
+# Set labels and title
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend()
+plt.grid(True)
 
-y_pred2 = model2.predict(X_test_scaled)
-
-print("Train score: ",round(model2.score(X_train_scaled, y_train),4))
-print("Accuracy: ", round(accuracy_score(y_test, y_pred2),4))
-print("Classification Report: ", classification_report(y_test, y_pred2))
+# Show plot
+plt.show()
