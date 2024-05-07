@@ -157,7 +157,7 @@ from sklearn.metrics import classification_report, accuracy_score, roc_auc_score
 ...
 plt.figure(figsize=(8, 6))
 
-# Roc curves from chatgpt
+# Roc Curves From ChatGPT
 for i, model in enumerate(models, start=1):
     fpr, tpr, _ = roc_curve((yTest == 6).astype(int), model.decision_function(xTestScaled))
     roc_auc = roc_auc_score((yTest == 6).astype(int), model.decision_function(xTestScaled))
